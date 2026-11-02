@@ -14,7 +14,7 @@ Disediakan sebagai layanan fondasi bagi ekosistem **SmarQuest App** agar para pe
 
 ## 📌 Informasi Dasar API
 
-- **Endpoint URL**: `https://hostgmkns.byethost32.com/dapodiksq/api.php`
+- **Endpoint URL**: `https://hostgmkns.byethost32.com/dapodiksq/api`
 - **Metode HTTP**: `GET`
 - **Format Output**: `application/json; charset=utf-8`
 - **Autentikasi**: *Public Open Access* (Tanpa API Key)
@@ -93,27 +93,27 @@ Anda dapat menggabungkan beberapa parameter query sekaligus untuk memfilter data
 
 1. **Mengambil Daftar Sekolah Default (25 item pertama)**:
    ```text
-   GET https://hostgmkns.byethost32.com/dapodiksq/api.php
+   GET https://hostgmkns.byethost32.com/dapodiksq/api
    ```
 
 2. **Mencari Semua SMK Negeri di Kabupaten Bandung (15 data per halaman)**:
    ```text
-   GET https://hostgmkns.byethost32.com/dapodiksq/api.php?bentuk=SMK&status=Negeri&kab=Bandung&limit=15&page=1
+   GET https://hostgmkns.byethost32.com/dapodiksq/api?bentuk=SMK&status=Negeri&kab=Bandung&limit=15&page=1
    ```
 
 3. **Mencari Sekolah Berdasarkan NPSN Tertentu**:
    ```text
-   GET https://hostgmkns.byethost32.com/dapodiksq/api.php?npsn=20219141
+   GET https://hostgmkns.byethost32.com/dapodiksq/api?npsn=20219141
    ```
 
 4. **Pencarian Bebas Kata Kunci (Misal: "Sawah") di Provinsi Jawa Tengah**:
    ```text
-   GET https://hostgmkns.byethost32.com/dapodiksq/api.php?q=Sawah&prov=Jawa Tengah
+   GET https://hostgmkns.byethost32.com/dapodiksq/api?q=Sawah&prov=Jawa Tengah
    ```
 
 5. **Tes Efek Loading Skeleton pada UI (Simulasi Delay 600 ms)**:
    ```text
-   GET https://hostgmkns.byethost32.com/dapodiksq/api.php?bentuk=SMA&delay=600
+   GET https://hostgmkns.byethost32.com/dapodiksq/api?bentuk=SMA&delay=600
    ```
 
 ---
@@ -122,7 +122,7 @@ Anda dapat menggabungkan beberapa parameter query sekaligus untuk memfilter data
 
 ### 1. JavaScript (Fetch API / Browser / Node.js)
 ```javascript
-const apiUrl = 'https://hostgmkns.byethost32.com/dapodiksq/api.php?bentuk=SMK&status=Negeri&kab=Bandung';
+const apiUrl = 'https://hostgmkns.byethost32.com/dapodiksq/api?bentuk=SMK&status=Negeri&kab=Bandung';
 
 async function getSekolah() {
   try {
@@ -149,7 +149,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<void> fetchSekolah() async {
-  final url = Uri.parse('https://hostgmkns.byethost32.com/dapodiksq/api.php?bentuk=SMA&limit=10');
+  final url = Uri.parse('https://hostgmkns.byethost32.com/dapodiksq/api?bentuk=SMA&limit=10');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
@@ -166,7 +166,7 @@ Future<void> fetchSekolah() async {
 ```python
 import requests
 
-url = "https://hostgmkns.byethost32.com/dapodiksq/api.php"
+url = "https://hostgmkns.byethost32.com/dapodiksq/api"
 params = {
     "bentuk": "SMK",
     "status": "Negeri",
@@ -183,7 +183,7 @@ if response.status_code == 200:
 ### 4. PHP (cURL / Client)
 ```php
 <?php
-$apiUrl = 'https://hostgmkns.byethost32.com/dapodiksq/api.php?bentuk=SMP&limit=5';
+$apiUrl = 'https://hostgmkns.byethost32.com/dapodiksq/api?bentuk=SMP&limit=5';
 $json = file_get_contents($apiUrl);
 $data = json_decode($json, true);
 
