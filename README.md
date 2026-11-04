@@ -1,270 +1,245 @@
-================================================================================
-           DAPODIKSQ API - DOKUMENTASI RESMI (OFFICIAL DOCUMENTATION)
-     Upstream Directory Service & School Search Provider (Kemendikdasmen)
-       Ekosistem Terintegrasi: SmarQuest App & GMKNS Platform (SQEXAM)
-================================================================================
+# 🏫 DapodikSQ API — Official Documentation
 
-[1. INFORMASI DASAR API]
---------------------------------------------------------------------------------
-- Endpoint Utama    : https://hostgmkns.byethost32.com/dapodiksq/api
-- Endpoint Alternatif: https://hostgmkns.byethost32.com/dapodiksq/api.php
-- Metode HTTP       : GET
-- Format Output     : application/json; charset=utf-8
-- Autentikasi       : Public Open Access (Tanpa API Key)
-- Dukungan CORS     : Aktif (Access-Control-Allow-Origin: *)
-- Micro-Caching     : 30 Detik (Menjaga latensi respons cepat & anti-overload)
-- Rate Limiting     : 80 request / menit per alamat IP
+[![API Status](https://img.shields.io/badge/API_Status-Online-brightgreen?style=flat-square)](https://hostgmkns.byethost32.com/dapodiksq/api)
+[![Response Format](https://img.shields.io/badge/Format-JSON-blue?style=flat-square)](https://json.org)
+[![CORS](https://img.shields.io/badge/CORS-Enabled_%28*%29-success?style=flat-square)](#)
+[![Ecosystem](https://img.shields.io/badge/Ecosystem-SmarQuest_App_%26_GMKNS-blueviolet?style=flat-square)](#)
+[![Integration](https://img.shields.io/badge/Integrated_With-SQEXAM-orange?style=flat-square)](#-integrasi-ekosistem-gmkns--sqexam)
 
+**DapodikSQ API** adalah antarmuka *RESTful API* publik dan open-source untuk mengakses direktori data pokok pendidikan sekolah se-Indonesia yang dinormalisasi dari Kemendikdasmen RI. 
 
-[2. DAFTAR PARAMETER QUERY URL (REQUEST)]
---------------------------------------------------------------------------------
-Gunakan kombinasi parameter berikut pada query string URL:
+API ini dirancang khusus sebagai penyedia data fondasi (*upstream data service*) bagi ekosistem **SmarQuest App** serta modul pencarian sekolah pada aplikasi **SQEXAM (GMKNS Ecosystem)**.
 
-1. q / keyword
-   - Tipe        : String (Maks. 60 karakter)
-   - Deskripsi   : Pencarian cerdas fleksibel (tokenized search) yang mencocokkan
-                   nama sekolah, NPSN, atau alamat secara tidak kaku.
-   - Contoh      : ?q=SMK+1+Katapang atau ?q=Negeri+1
+---
 
-2. npsn
-   - Tipe        : String (8 digit angka)
-   - Deskripsi   : Pencarian presisi spesifik berdasarkan 8 digit Nomor Pokok
-                   Sekolah Nasional.
-   - Contoh      : ?npsn=20219141
+## 📌 Informasi Dasar API
 
-3. bentuk / jenjang
-   - Tipe        : String
-   - Deskripsi   : Memfilter berdasarkan bentuk pendidikan.
-   - Pilihan     : SD, SMP, SMA, SMK, SLB, TK, PKBM
-   - Contoh      : ?bentuk=SMK
+- **Endpoint URL**: `https://hostgmkns.byethost32.com/dapodiksq/api` *(atau `/dapodiksq/api.php`)*
+- **Metode HTTP**: `GET`
+- **Format Output**: `application/json; charset=utf-8`
+- **Autentikasi**: *Public Open Access* (Tanpa API Key)
+- **CORS Support**: Aktif (`Access-Control-Allow-Origin: *`), dapat diakses langsung dari browser klien, Node.js, Vercel Serverless, maupun Mobile Apps.
+- **Micro-Caching**: Terintegrasi cache 30 detik untuk menjamin latensi respons tinggi di bawah 200 ms.
 
-4. status
-   - Tipe        : String
-   - Deskripsi   : Memfilter status kepemilikan sekolah.
-   - Pilihan     : Negeri, Swasta
-   - Contoh      : ?status=Negeri
+---
 
-5. kab / kabupaten / kabupaten_kota
-   - Tipe        : String
-   - Deskripsi   : Memfilter nama Kabupaten atau Kota.
-   - Contoh      : ?kab=Bandung
+## 🔍 Parameter Query URL (Request)
 
-6. prov / provinsi
-   - Tipe        : String
-   - Deskripsi   : Memfilter nama Provinsi.
-   - Contoh      : ?prov=Jawa+Barat
+Anda dapat menggabungkan beberapa parameter query sekaligus untuk memfilter data sekolah secara fleksibel:
 
-7. kecamatan
-   - Tipe        : String
-   - Deskripsi   : Memfilter nama Kecamatan.
-   - Contoh      : ?kecamatan=Katapang
+| Parameter | Tipe | Contoh Nilai | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `q` / `keyword` | `string` | `SMK 1 Katapang` | Pencarian fleksibel (*tokenized search*) pada **Nama Sekolah**, **NPSN**, atau **Alamat**. |
+| `npsn` | `string` | `20219141` | Pencarian spesifik sekolah berdasarkan 8 digit kode NPSN. |
+| `bentuk` / `jenjang` | `string` | `SMK`, `SMA`, `SMP`, `SD` | Filter berdasarkan bentuk pendidikan / jenjang. |
+| `status` | `string` | `Negeri`, `Swasta` | Filter status kepemilikan sekolah (*whitelist*: Negeri / Swasta). |
+| `kab` / `kabupaten` | `string` | `Bandung` | Filter nama Kabupaten atau Kota. |
+| `prov` / `provinsi` | `string` | `Jawa Barat` | Filter nama Provinsi. |
+| `kecamatan` | `string` | `Katapang` | Filter nama Kecamatan. |
+| `page` | `integer` | `1` *(Default: 1)* | Nomor halaman (*pagination*). |
+| `limit` | `integer` | `10` *(Default: 25, Maks: 100)* | Batas jumlah data yang ditampilkan per permintaan. |
+| `format` | `string` | `sqexam` | Mengembalikan output khusus yang sudah dipetakan langsung untuk skema **SQEXAM**. |
+| `delay` | `integer` | `100` *(ms)* | Menambahkan jeda simulasi (Maks. 300 ms) untuk pengujian UI *skeleton/loading*. |
+| `raw` | `boolean` | `true` atau `1` | Menyertakan payload mentah asli Kemendikdasmen (`raw_data`). |
 
-8. page
-   - Tipe        : Integer (Default: 1)
-   - Deskripsi   : Nomor halaman data (pagination).
-   - Contoh      : ?page=2
+---
 
-9. limit
-   - Tipe        : Integer (Default: 25, Maksimal: 100)
-   - Deskripsi   : Batas jumlah data yang dikembalikan dalam satu respons.
-   - Contoh      : ?limit=10
+## 📥 Format Respons JSON
 
-10. format
-    - Tipe       : String
-    - Deskripsi  : Pilihan format output data. Isi dengan "sqexam" jika ingin
-                   skema respons langsung dipetakan ke format aplikasi SQEXAM.
-    - Contoh     : ?format=sqexam
+### 1. Format Standar (DapodikSQ Envelope)
+Format bawaan yang dikonsumsi oleh *upstream handler* seperti Vercel Serverless Function:
 
-11. delay
-    - Tipe       : Integer (Maksimal: 300 ms)
-    - Deskripsi  : Menambahkan jeda waktu simulasi respons untuk pengujian UI
-                   efek skeleton / loading.
-    - Contoh     : ?delay=150
+```json
+{
+  "status": "success",
+  "code": 200,
+  "message": "Data sekolah berhasil diambil.",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total_rows": 1,
+    "total_pages": 1,
+    "has_next": false,
+    "has_prev": false
+  },
+  "filters_applied": {
+    "keyword": "SMK 1",
+    "npsn": null,
+    "bentuk": "SMK",
+    "status": "Negeri",
+    "kabupaten": "Bandung",
+    "provinsi": null,
+    "kecamatan": null,
+    "delay_ms": 0
+  },
+  "data": [
+    {
+      "id": 42,
+      "sekolah_id": "9B0A3D2F-XXXX-XXXX-XXXX",
+      "npsn": "20219141",
+      "nama_sekolah": "SMKN 1 KATAPANG",
+      "bentuk_pendidikan": "SMK",
+      "status_sekolah": "Negeri",
+      "alamat": "Jl. Ceuri BK No. 1, Katapang",
+      "kecamatan": "Katapang",
+      "kabupaten_kota": "Kab. Bandung",
+      "provinsi": "Jawa Barat",
+      "updated_at": "2026-03-01 10:20:00"
+    }
+  ]
+}
+```
 
-12. raw
-    - Tipe       : Boolean (true / 1)
-    - Deskripsi  : Menyertakan seluruh payload objek JSON mentah asli dari
-                   Kemendikdasmen (raw_data).
-    - Contoh     : ?raw=true
+### 2. Format SQEXAM Langsung (`?format=sqexam`)
+Digunakan jika frontend ingin mengambil skema instan yang cocok dengan model data aplikasi SQEXAM:
 
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "9B0A3D2F-XXXX-XXXX-XXXX",
+      "npsn": "20219141",
+      "name": "SMKN 1 KATAPANG",
+      "school_type": "SMK"
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "total_rows": 1
+  }
+}
+```
 
-[3. STRUKTUR FORMAT RESPONS JSON]
---------------------------------------------------------------------------------
+---
 
-A. FORMAT STANDAR (DapodikSQ Envelope)
-   Format default yang dikonsumsi oleh upstream service Vercel SQEXAM:
+## 🔗 Integrasi Ekosistem GMKNS / SQEXAM
 
-   {
-     "status": "success",
-     "code": 200,
-     "message": "Data sekolah berhasil diambil.",
-     "pagination": {
-       "page": 1,
-       "limit": 10,
-       "total_rows": 1,
-       "total_pages": 1,
-       "has_next": false,
-       "has_prev": false
-     },
-     "filters_applied": {
-       "keyword": "SMK 1",
-       "npsn": null,
-       "bentuk": "SMK",
-       "status": "Negeri",
-       "kabupaten": "Bandung",
-       "provinsi": null,
-       "kecamatan": null,
-       "delay_ms": 0
-     },
-     "data": [
-       {
-         "id": 42,
-         "sekolah_id": "9B0A3D2F-XXXX-XXXX-XXXX",
-         "npsn": "20219141",
-         "nama_sekolah": "SMKN 1 KATAPANG",
-         "bentuk_pendidikan": "SMK",
-         "status_sekolah": "Negeri",
-         "alamat": "Jl. Ceuri BK No. 1, Katapang",
-         "kecamatan": "Katapang",
-         "kabupaten_kota": "Kab. Bandung",
-         "provinsi": "Jawa Barat",
-         "updated_at": "2026-03-01 10:20:00"
-       }
-     ]
-   }
+Endpoint ini **didukung penuh** oleh arsitektur pencarian sekolah aplikasi **SQEXAM**. Handler Vercel Node.js (`schools-search.ts`) dapat langsung memanggil API DapodikSQ sebagai *upstream*:
 
-B. FORMAT SQEXAM LANGSUNG (?format=sqexam)
-   Format siap pakai yang langsung cocok dengan model frontend SQEXAM:
+### Contoh Implementasi Handler Vercel (`schools-search.ts`):
 
-   {
-     "success": true,
-     "data": [
-       {
-         "id": "9B0A3D2F-XXXX-XXXX-XXXX",
-         "npsn": "20219141",
-         "name": "SMKN 1 KATAPANG",
-         "school_type": "SMK"
-       }
-     ],
-     "meta": {
-       "count": 1,
-       "total_rows": 1
-     }
-   }
+```typescript
+import type { VercelRequest, VercelResponse } from '@vercel/node'
 
+const SCHOOL_API_URL = 'https://hostgmkns.byethost32.com/dapodiksq/api'
 
-[4. INTEGRASI EKOSISTEM GMKNS / SQEXAM (schools-search.ts)]
---------------------------------------------------------------------------------
-API DapodikSQ telah dirancang 100% kompatibel dengan handler Vercel Node.js
-pada aplikasi ujian SQEXAM (schools-search.ts).
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const q = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 60) : ''
+  const npsn = typeof req.query.npsn === 'string' ? req.query.npsn.trim() : ''
+  const limit = Math.min(Number(req.query.limit) || 10, 20)
 
-Alur Normalisasi Lapisan SQEXAM:
-1. Handler memanggil URL upstream:
-   https://hostgmkns.byethost32.com/dapodiksq/api?q=...&npsn=...&limit=...
-2. Memverifikasi status === 'success' dan data berupa Array.
-3. Melakukan pemetaan field:
-   - school.sekolah_id     -> school.id (terdapat fallback otomatis ke NPSN/ID)
-   - school.npsn           -> school.npsn
-   - school.nama_sekolah   -> school.name
-   - school.bentuk_pendidikan -> school.school_type
-4. Mengembalikan respons final berstatus 200 JSON ke antarmuka aplikasi ujian.
+  const url = new URL(SCHOOL_API_URL)
+  if (q) url.searchParams.set('q', q)
+  if (npsn) url.searchParams.set('npsn', npsn)
+  url.searchParams.set('limit', String(limit))
 
+  try {
+    const upstream = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(10_000),
+    })
 
-[5. CONTOH KODE IMPLEMENTASI]
---------------------------------------------------------------------------------
+    const payload = await upstream.json()
 
-A. JAVASCRIPT / TYPESCRIPT (Fetch API Browser / Node.js)
-   -----------------------------------------------------
-   async function cariSekolah(keyword) {
-     const endpoint = `https://hostgmkns.byethost32.com/dapodiksq/api?q=${encodeURIComponent(keyword)}&limit=10`;
-     const res = await fetch(endpoint, {
-       headers: { 'Accept': 'application/json' }
-     });
-     const json = await res.json();
-     
-     if (json.status === 'success') {
-       json.data.forEach(item => {
-         console.log(`[${item.npsn}] ${item.nama_sekolah} (${item.kabupaten_kota})`);
-       });
-     }
-   }
-   cariSekolah('SMKN 1 Katapang');
+    if (!upstream.ok || payload.status !== 'success' || !Array.isArray(payload.data)) {
+      return res.status(502).json({ success: false, message: 'Invalid Upstream Response' })
+    }
 
+    // Pemetaan langsung ke model data SQEXAM
+    const schools = payload.data
+      .map((school: any) => ({
+        id: String(school.sekolah_id || school.npsn),
+        npsn: String(school.npsn),
+        name: String(school.nama_sekolah),
+        school_type: String(school.bentuk_pendidikan),
+      }))
+      .filter((s: any) => s.id && s.name)
 
-B. DART / FLUTTER (Mobile Application)
-   -----------------------------------
-   import 'dart:convert';
-   import 'package:http/http.dart' as http;
+    return res.status(200).json({
+      success: true,
+      data: schools,
+      meta: { count: schools.length },
+    })
+  } catch (error) {
+    return res.status(502).json({ success: false, message: 'School Data Service Unavailable' })
+  }
+}
+```
 
-   Future<List<dynamic>> searchSchool(String keyword) async {
-     final uri = Uri.parse('https://hostgmkns.byethost32.com/dapodiksq/api?q=$keyword&limit=10');
-     final response = await http.get(uri, headers: {'Accept': 'application/json'});
+---
 
-     if (response.statusCode == 200) {
-       final Map<String, dynamic> body = json.decode(response.body);
-       return body['data'] ?? [];
-     }
-     return [];
-   }
+## 💻 Contoh Penggunaan di Berbagai Bahasa
 
+### 1. JavaScript / TypeScript (Frontend Web)
+```javascript
+async function cariSekolah(keyword) {
+  const url = `https://hostgmkns.byethost32.com/dapodiksq/api?q=${encodeURIComponent(keyword)}&limit=10`;
+  const res = await fetch(url);
+  const json = await res.json();
+  
+  if (json.status === 'success') {
+    json.data.forEach(sch => {
+      console.log(`[${sch.npsn}] ${sch.nama_sekolah} - ${sch.kabupaten_kota}`);
+    });
+  }
+}
 
-C. PYTHON
-   ------
-   import requests
+cariSekolah('SMK 1 Katapang');
+```
 
-   url = "https://hostgmkns.byethost32.com/dapodiksq/api"
-   params = {"q": "Negeri 1", "bentuk": "SMK", "limit": 10}
+### 2. Flutter / Dart (Mobile Apps)
+```dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-   response = requests.get(url, params=params)
-   if response.status_code == 200:
-       sekolah_list = response.json().get("data", [])
-       for sch in sekolah_list:
-           print(f"{sch['npsn']} - {sch['nama_sekolah']}")
+Future<List<dynamic>> searchSchool(String keyword) async {
+  final url = Uri.parse('https://hostgmkns.byethost32.com/dapodiksq/api?q=$keyword&limit=10');
+  final response = await http.get(url, headers: {'Accept': 'application/json'});
 
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> body = json.decode(response.body);
+    return body['data'] ?? [];
+  }
+  return [];
+}
+```
 
-D. PHP (cURL Client)
-   -----------------
-   <?php
-   $apiUrl = 'https://hostgmkns.byethost32.com/dapodiksq/api?q=SMK&limit=5';
-   $response = file_get_contents($apiUrl);
-   $result = json_decode($response, true);
+### 3. Python
+```python
+import requests
 
-   if ($result && $result['status'] === 'success') {
-       foreach ($result['data'] as $row) {
-           echo "{$row['npsn']} | {$row['nama_sekolah']}" . PHP_EOL;
-       }
-   }
+url = "https://hostgmkns.byethost32.com/dapodiksq/api"
+params = {"q": "Negeri 1", "bentuk": "SMK", "limit": 10}
 
+res = requests.get(url, params=params)
+if res.status_code == 200:
+    for school in res.json().get("data", []):
+        print(f"{school['npsn']} - {school['nama_sekolah']}")
+```
 
-[6. KODE STATUS HTTP (HTTP STATUS CODES)]
---------------------------------------------------------------------------------
-- 200 OK                  : Permintaan berhasil diproses dan data dikembalikan.
-- 400 Bad Request         : Parameter masukan tidak memenuhi format validasi.
-- 405 Method Not Allowed  : Metode HTTP salah (hanya mengizinkan metode GET).
-- 429 Too Many Requests   : Batas rate-limit terlampaui (> 80 request / menit).
-- 500 Internal Server Err : Gangguan saat menghubungi basis data MySQL ByetHost.
-- 502 Bad Gateway         : Layanan upstream gagal merespons tepat waktu.
+---
 
+## ⚠️ Kode Status HTTP (HTTP Status Codes)
 
-[7. ETIKA & KETENTUAN PENGGUNAAN (FAIR USE)]
---------------------------------------------------------------------------------
-Layanan API ini terbuka untuk kepentingan umum di bawah lisensi open-source
-ekosistem SmarQuest App dengan mematuhi prinsip tanggung jawab:
+| Kode | Keterangan | Penjelasan |
+| :--- | :--- | :--- |
+| `200 OK` | Sukses | Permintaan berhasil diproses dan data sekolah dikembalikan. |
+| `405 Method Not Allowed` | Metode Salah | Permintaan dikirim selain menggunakan metode `GET` atau `OPTIONS`. |
+| `429 Too Many Requests` | Limit Terlampaui | Alamat IP Anda melebihi batas proteksi rate-limit (maks. 80 request/menit). |
+| `500 Internal Server Error` | Gangguan Server | Terjadi kendala saat membaca basis data MySQL. |
 
-1. Kemanfaatan Edukasi : Digunakan untuk mendukung sistem administrasi ujian
-                          (SQEXAM), verifikasi sekolah, dan portofolio teknologi.
-2. Caching Klien       : Disarankan menerapkan caching statis di sisi klien
-                          untuk kata kunci yang berulang demi menjaga efisiensi.
-3. Larangan Flooding   : Dilarang keras melakukan bot spamming atau DDoS yang
-                          dapat merugikan pengguna lain di server bersama.
+---
 
+## ⚖️ Etika dan Tanggung Jawab Penggunaan
 
-[8. DUKUNGAN EKOSISTEM & KONTAK]
---------------------------------------------------------------------------------
-- Platform Ekosistem : SmarQuest App & GMKNS Platform
-- Repositori Resmi   : GitHub (Farhan-A-F/DapodikSQ)
-- Pemeliharaan Data  : Tersinkronisasi berkala via GitHub Actions & Dapodik Engine
+Layanan API ini terbuka untuk umum dengan komitmen menjaga ketersediaan layanan bersama:
+1. **Pemanfaatan Edukatif**: Ditujukan untuk memajukan integrasi aplikasi pendidikan (seperti SQEXAM), administrasi ujian, dan transparansi data sekolah.
+2. **Caching Sisi Klien**: Disarankan melakukan *caching* lokal pada aplikasi klien untuk kata kunci sekolah yang sering dicari.
+3. **Anti-Flooding**: Harap tidak melakukan *scraping massal* secara agresif demi menjaga stabilitas server bersama.
 
-================================================================================
-          (c) 2026 DapodikSQ Ecosystem - All Rights Reserved.
-================================================================================
+---
+
+## 🤝 Ekosistem & Kontak
+
+Bagian dari ekosistem **SmarQuest App** & **GMKNS Platform**. Kontribusi dan pelaporan kendala dapat dilakukan melalui menu *Issues* pada repositori GitHub resmi.
